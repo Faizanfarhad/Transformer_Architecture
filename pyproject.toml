@@ -1,0 +1,22 @@
+[project]
+name = "transformer-architechture"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "datasets>=3.6.0",
+    "de-core-news-sm",
+    "en-core-web-sm",
+    "nltk>=3.9.1",
+    "numpy>=2.2.5",
+    "pandas>=2.2.3",
+    "scikit-learn>=1.6.1",
+    "spacy>=3.7.0,<3.8.0",
+    "torch>=2.7.0",
+    "torchtext>=0.18.0",
+]
+
+[tool.uv.sources]
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.0/en_core_web_sm-3.7.0-py3-none-any.whl" }
+de-core-news-sm = { url = "https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.7.0/de_core_news_sm-3.7.0-py3-none-any.whl" }
