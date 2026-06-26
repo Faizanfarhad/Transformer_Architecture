@@ -7,54 +7,66 @@ import torch.nn as nn
 from torch import tensor
 from layers.scale_dot_product import ScaledDotProductAttention
 
-class MultiheadAttention:
-    def __init__(self,dmodel,num_head):
-        
+class MultiheadAttention(nn.Module):
+    def __init__(self,dmodel,num_head,max_len,device='cpu'):
+        super(MultiheadAttention,self).__init__()
+        self.device = device
         self.num_head  = num_head
         # Ensure dimensions are divisible by num_heads
         assert dmodel % self.num_head == 0, "dmodel must be divisible by num_heads"
         
-        
-        self.attention = ScaledDotProductAttention()
-        self.dv = dmodel // num_head
-        self.dk = dmodel // num_head
-        
-        self.Wq = nn.Linear(dmodel,dmodel,bias=False)
-        self.Wk = nn.Linear(dmodel,dmodel,bias=False)
-        self.Wv = nn.Linear(dmodel,dmodel,bias=False)
+        self.attention = ScaledDotProductAttention(device=device)
+        self.d_head = dmodel // num_head
+        self.seq_len = max_len
+        # WQ,WK,WQ shape should be : R^ dmodel x d_K
+
+        self.Wq = nn.Linear(dmodel,dmodel,device=device)
+        self.Wk = nn.Linear(dmodel,dmodel,device=device)
+        self.Wv = nn.Linear(dmodel,dmodel,device=device)
+        self.W_O =nn.Linear(dmodel,dmodel,device=device)
         
         # Final linear layer after concatenation
-        self.W_concat = nn.Linear(dmodel,dmodel , bias=False)
         
-    def forward(self,q,k,v,mask=None,ep=1e-12):
-        q,k,v = self.Wq(q),self.Wk(k),self.Wv(v)
+    def forward(self,X,att_mask=None):
+        # q , k,v shape should be : R^ n x dk
+        # print(f"Input shape : {X.shape}")
+       
+        B,T,d_model = X.shape #shape B,T,dk 
+        Q = self.Wq(X) # shape out : B,T,dk
+        K = self.Wk(X) # shape out : B,T,dk
+        V = self.Wv(X) # shape out : B,T,dk
+       
+        # print(f"Q shape : {Q.shape}")
+        # print(f"K shape : {K.shape} ")
+        # print(f"V shape : {V.shape}: ")
+       
+        Q = Q.view(B,T,self.num_head, self.d_head).transpose(1,2) #after transpose shape : B,h,T,T 
+        K = K.view(B,T,self.num_head, self.d_head).transpose(1,2) # ""
+        V = V.view(B,T,self.num_head, self.d_head).transpose(1,2) # ""
         
-        q,k,v = self.split(q),self.split(k),self.split(v)
-            
-        out, attention = self.attention(q,k,v,mask=mask)
+        
+        context = self.attention(Q,K,V,att_mask=att_mask)
+        
+        # print(f"After Scale Dot Q shape : {Q.shape}")
+        # print(f"After Scale Dot K shape : {K.shape} ")
+        # print(f"After Scale Dot V shape : {V.shape}: ")
+        # print(f"After Scale Dot Context shape : {context.shape}: ")
+        
+        assert context.shape == (B,T,d_model), f"shape should be B,T,dmodel not {context.shape}"
+        out = self.W_O(context).to(self.device)
 
-        out = self.concat(out)
-        out = self.W_concat(out)
+        # print(f"Output shape {out.shape}")
         return out
         
-    def split(self,tensor):
-        """
-        split tensor by number of head
 
-        :param tensor: [batch_size, length, d_model]
-        :return: [batch_size, head, length, d_tensor]
-        """
-        batch_size,length,dmodel = tensor.size()
-        
-        d_tensor = dmodel // self.num_head
-        
-        tensor = tensor.view(batch_size,length,self.num_head,d_tensor).transpose(1,2)
-                # it is similar with group convolution (split by number of heads)
-        return tensor
+'''
+flow : 
+input X E R^ n * d
+        |
+        Q*Wq,K*Wk,V*Wv 
+        |
+        used ScaledDotProduct(Layer) for computing the attention scores then context and concat the context of all the heads in to one 
+        |
+        and the last layer  of computing W_O for introducing randomness
 
-    def concat(self,tensor):
-        batch_size,head,length,d_tensor = tensor.size()
-        dmodel = head * d_tensor
-        tensor = tensor.transpose(1,2).contiguous().view(batch_size,length,dmodel)
-        return tensor
-        
+'''

@@ -97,7 +97,7 @@ def evaluate(model, itreator,criterion):
                     output_words = idx_to_word(output_words,loader.target_vocab)
                     bleu = get_blue(hypothesis=output_words.split(), refrence=trg_words.split())
                     total_bleu.append(bleu)
-                except:
+                except: 
                     pass
                 
         total_bleu = sum(total_bleu) / len(total_bleu)

@@ -8,6 +8,7 @@ if project_root not in sys.path:
 
 import torch
 from torchtext.datasets import Multi30k
+from torchtext.data import Field
 from torch.utils.data import DataLoader as TorchDataLoader, Dataset
 from datasets import load_dataset
 from collections import Counter
@@ -24,7 +25,13 @@ class DataLoader:
         self.target_vocab = {}
         
     def make_dataset(self):
-        train_data, valid_data, test_data = Multi30k(split=('train', 'valid', 'test'))
+        SRC = Field(tokenize=self.tokenize_de, init_token=self.init_token, eos_token=self.eos_token)
+        TRG = Field(tokenize=self.tokenize_en, init_token=self.init_token, eos_token=self.eos_token)
+
+        train_data, valid_data, test_data = Multi30k.splits(
+            exts=('.de', '.en'),
+            fields=(SRC, TRG)
+        )
         return train_data,valid_data,test_data
     
     def buil_vocab(self,train_data,min_freq):

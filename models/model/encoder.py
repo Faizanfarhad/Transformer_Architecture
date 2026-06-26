@@ -15,7 +15,7 @@ class Encoder(nn.Module):
         super().__init__()
         self.emb = TransformerEmbedding(enc_voc_size,d_model=d_model,max_len=max_len,drop_prob=drop_porb,device=device)
         
-        self.layers = nn.ModuleList([EncoderLayer(d_model=d_model,ffn_hidden=ffn_hidden,n_head=n_head,drop_prob=drop_porb) for _ in range(n_layers)])
+        self.layers = nn.ModuleList([EncoderLayer(d_model=d_model,max_len=max_len,ffn_hidden=ffn_hidden,n_head=n_head,drop_prob=drop_porb) for _ in range(n_layers)])
     
     def forward(self,x,src_mask):
         x = self.emb(x)

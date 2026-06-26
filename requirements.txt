@@ -1,0 +1,11 @@
+datasets>=3.6.0
+numpy>=2.2.5
+pandas>=2.2.3
+scikit-learn>=1.6.1
+matplotlib>=3.8.0
+torch>=2.7.0
+torchtext>=0.18.0
+spacy>=3.7.0,<3.8.0
+nltk>=3.9.1
+keras-preprocessing>=1.1.2
+kagglehub>=0.1.0

@@ -1,33 +1,38 @@
 import sys
 import os
 
-project_root = sys.path.insert(0,os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if project_root not in sys.path:
-    sys.path.insert(0,project_root)
+    sys.path.insert(0, project_root)
+
+
+#NOTE : this is for the Encoder Block 
 
 import torch.nn as nn
 import torch
-import math
-
+import torch.nn.functional as F
 class ScaledDotProductAttention(nn.Module):
-    def __init__(self):
+    def __init__(self,device):
         super(ScaledDotProductAttention,self).__init__()
-        self.softmax = nn.Softmax(dim=-1)
+        self.device = device
+    def forward(self,q,k,v,att_mask=None,ep=1e-12):
+
+        batch,num_head,T,d_head = k.shape
+        dmodel = num_head*d_head
         
-    def forward(self,q,k,v,mask=None,ep=1e-12):
+        k_t = k.transpose(-2,-1)
         
-        batch_size,head,seq_len,d_k = k.size()
+        score = torch.matmul(q,k_t).to(self.device) / (d_head**0.5)
         
-        k_t = k.transpose(2,3)
+        if att_mask is not None:
+            mask = att_mask[: , None , None , :]
+            score = score.masked_fill(mask == 0, -1e9)
+       
+        attention_weights = F.softmax(score,dim=-1)
+       
+        context = torch.matmul(attention_weights, v).to(self.device)
+       
+        context = context.transpose(1,2).contiguous().view(batch,T,dmodel)
         
-        score = torch.matmul(q,k_t) / math.sqrt(d_k)
-        
-        if mask is not None:
-            score = score.masked_fill(mask == 0, -10000)
-        
-        score = self.softmax(score)
-        
-        V = torch.matmul(score,v)
-        
-        return V,score
+        return context
 

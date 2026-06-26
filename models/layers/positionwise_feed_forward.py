@@ -10,14 +10,14 @@ import torch
 ffn_input = an.LayerNorm
 
 class PositionwiseFeedForward(nn.Module):
-    def __init__(self,d_ff,dmodel):
+    def __init__(self,d_ff,dmodel,device='cpu'):
         super(PositionwiseFeedForward,self).__init__()
-        
+        self.device = device
         self.ffn = nn.Sequential(
-            nn.Linear(dmodel,d_ff),
+            nn.Linear(dmodel,d_ff,device=device),
             nn.ReLU(),
             nn.Dropout(p=0.1),
-            nn.Linear(d_ff,dmodel)
+            nn.Linear(d_ff,dmodel,device=device),
         )
     def forward(self,x:torch.Tensor):
         

@@ -6,11 +6,11 @@ import torch
 import torch.nn as nn
 
 class LayerNorm(nn.Module):
-    def __init__(self,d_model,epsilon=1e-12):
+    def __init__(self,d_model,epsilon=1e-12,device='cpu'):
         super(LayerNorm,self).__init__()
         
-        self.gamma = nn.Parameter(torch.ones(d_model))
-        self.beta = nn.Parameter(torch.zeros(d_model))
+        self.gamma = nn.Parameter(torch.ones(d_model,device=device))
+        self.beta = nn.Parameter(torch.zeros(d_model,device=device))
         self.eps = epsilon
         
     def forward(self,x):

@@ -1,2 +1,9 @@
 __pycache__/
-images/*
+images/
+TODO.txt
+tempCodeRunnerFile.py
+Refrence/
+topics_to_learn.txt
+eval_results.json
+saved_model/
+uv.lock
