@@ -2,7 +2,13 @@
 
 This repository implements a small Transformer-based sentiment classifier (training pipeline and notebook examples). The core experiment lives in [EncoderBlock.ipynb](EncoderBlock.ipynb) which shows data preparation, model definition, training loop, and evaluation.
 
+**Note**: While interacting with [EncoderBlock.ipynb](EncoderBlock.ipynb) , you dont need to install the dataset it will load the dataset in main memory after running the third cell 
+
 **Quick Start**
+- **Install dependencies:**
+  ```bash
+  pip install -r requirements.txt
+  ```
 - **Run notebook:** open [EncoderBlock.ipynb](EncoderBlock.ipynb) and run cells in order to reproduce training and evaluation.  
 - **Main model files:** see [models/model/encoder.py](models/model/encoder.py) and [models/embeddings/transformer_econding.py](models/embeddings/transformer_econding.py).
 
@@ -43,6 +49,12 @@ Important constraint: embeddings must receive integer index tensors (`torch.long
 - Used by the main notebook and model: [models/](models/) and its subfolders: [models/embeddings](models/embeddings), [models/blocks](models/blocks), [models/model](models/model).  
 - Utility helpers used: [util/](util/) for tokenizers and data loading.  
 - Checkpoints are saved under: `saved_model/` (used to save/load weights).
+
+**Directories Structure**
+-[`encoder_layer.py`](models/blocks/encoder_layer.py)] : for the Full Encoder Block  
+-[`multihead_attention.py`](models/layers/multihead_attention.py)] : for the implementation of the MultiHead Attention Layer
+-[`add_norm.py`](models/layers/add_norm.py)] : for the implementation of the Add&Norm Layer
+-[`positionwise_feed_forward.py`](models/layers/positionwise_feed_forward.py)] : for the Implementation of the FFN layer 
 
 **Directories You Can Reuse / Extend**
 - Some folders are present but not required directly by `EncoderBlock.ipynb`. These are useful places to add features or experiments:  
