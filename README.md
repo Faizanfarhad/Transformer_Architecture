@@ -1,8 +1,8 @@
 **Project Overview**
 
-This repository implements a small Transformer-based sentiment classifier (training pipeline and notebook examples). The core experiment lives in [EncoderBlock.ipynb](EncoderBlock.ipynb) which shows data preparation, model definition, training loop, and evaluation.
+This repository implements Encoder Transformer-based sentiment classifier (training pipeline and notebook examples). The core experiment lives in [EncoderBlock.ipynb](EncoderBlock.ipynb) which shows data preparation, model definition, training loop, and evaluation.
 
-**Note**: While interacting with [EncoderBlock.ipynb](EncoderBlock.ipynb) , you dont need to install the dataset it will load the dataset in main memory after running the third cell 
+**Note**: While interacting with [EncoderBlock.ipynb](EncoderBlock.ipynb) , you dont need to install the dataset it will load the dataset in main memory after running the third cell ,There  is decoder Architetcure is available because i forked this repo from someone so it contain the decoder layer but it is in previous versions of the pytorch and  other library that needs to be updated ,i dont have use for the decoder architechture so i didnt bother to update it , i just update the layer of the encoder architecture according to my needs and add some extra logic to build an sentiment analysis model  
 
 **Quick Start**
 - **Install dependencies:**
